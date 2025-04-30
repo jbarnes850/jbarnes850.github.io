@@ -1,8 +1,27 @@
-title: My Blog
-description: My personal blog powered by GitHub Pages
+title: Jarrod Barnes
+description: Thoughts on technology, leadership, and building AI systems
 author: Jarrod Barnes
+email: jarrod@arc.computer
+baseurl: ""
+url: "https://jbarnes850.github.io"
 theme: minima
 permalink: /:year/:month/:day/:title/
+
+# Social links
+social_links:
+  linkedin: jarrodbarnes
+  github: jbarnes850
+
+# Build settings
+markdown: kramdown
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .gitignore

@@ -2,17 +2,35 @@
 layout: default
 ---
 
-<div class="home">
-  {{ content }}
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-description">Thoughts on technology, leadership, and building the future</p>
+  </div>
+</section>
 
-  <h2>Latest Posts</h2>
-  <ul class="post-list">
+<section class="home-content">
+  {{ content }}
+</section>
+
+<section class="latest-posts">
+  <h2 class="section-title">Latest Writing</h2>
+  <div class="post-grid">
     {% for post in site.posts %}
-    <li>
-      <span class="post-date">{{ post.date | date: "%b %-d, %Y" }}</span>
-      <h3><a class="post-link" href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
-      <p>{{ post.excerpt }}</p>
-    </li>
+    <article class="post-card">
+      <div class="post-meta">
+        <span class="post-date">{{ post.date | date: "%B %-d, %Y" }}</span>
+        {% if post.categories %}
+        <span class="post-categories">
+          {% for category in post.categories %}
+          <span class="category">{{ category }}</span>
+          {% endfor %}
+        </span>
+        {% endif %}
+      </div>
+      <h3 class="post-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+      <div class="post-excerpt">{{ post.excerpt }}</div>
+      <a href="{{ post.url | relative_url }}" class="read-more">Read more →</a>
+    </article>
     {% endfor %}
-  </ul>
-</div>
+  </div>
+</section>

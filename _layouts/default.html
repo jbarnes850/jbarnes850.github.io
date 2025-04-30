@@ -5,17 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ page.title }} | {{ site.title }}</title>
   <link rel="stylesheet" href="/assets/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/3b28db3162.js" crossorigin="anonymous"></script>
 </head>
 <body>
   <header>
     <div class="container">
-      <h1><a href="/">{{ site.title }}</a></h1>
-      <nav>
-        <ul>
-          <li><a href="/">Home</a></li>
-          <li><a href="/about">About</a></li>
-        </ul>
-      </nav>
+      <div class="header-content">
+        <h1 class="site-title"><a href="/">{{ site.title }}</a></h1>
+        <nav>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/blog">Blog</a></li>
+          </ul>
+        </nav>
+      </div>
     </div>
   </header>
 
@@ -25,7 +32,13 @@
 
   <footer>
     <div class="container">
-      <p>&copy; {{ site.time | date: '%Y' }} {{ site.author }}. All rights reserved.</p>
+      <div class="footer-content">
+        <div class="social-links">
+          <a href="https://www.linkedin.com/in/jarrodbarnes" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.github.com/jbarnes850" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
+        </div>
+        <p class="copyright">&copy; {{ site.time | date: '%Y' }} {{ site.author }}. All rights reserved.</p>
+      </div>
     </div>
   </footer>
 </body>
