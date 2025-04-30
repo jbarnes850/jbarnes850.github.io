@@ -1,0 +1,8 @@
+title: My Blog
+description: My personal blog powered by GitHub Pages
+author: Jarrod Barnes
+theme: minima
+permalink: /:year/:month/:day/:title/
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
