@@ -4,7 +4,7 @@ This is the repository for my personal blog, powered by GitHub Pages and Jekyll.
 
 ## About
 
-This blog is where I share my thoughts, experiences, and projects. Feel free to check it out!
+Thoughts on technology, leadership, and building the future - feel free to check it out!
 
 ## Technologies Used
 
