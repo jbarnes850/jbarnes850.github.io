@@ -15,7 +15,13 @@ I often wonder about future capabilities, but I’m consistently drawn back to w
 
 This is most prominent in software engineering largely due to how these models were trained. Billions of lines of source code creates a very compelling learning environment for AI.
 
-The ripple effect is that software creation is commoditized with tools like Windsurf, Cursor, and v0. It's tempting, even necessary sometimes, to lean into the speed – I myself have certainly felt the pull of 'vibe coding' with the latest models, trusting the 'vibes' because the AI is just that good. As a self-taught engineer, it reminds me a bit of learning with pseudocode – a useful starting point, perhaps, but not the whole journey. However, at what point does comprehension need to surpass approximation or speed? To effectively orchestrate AI-generated code for complex, reliable systems (beyond a cool landing page), relying purely on 'vibes' isn't enough. You need deep fluency in both the problem domain and the generated syntax *(what are you trying to create and how can you tell that specifically to the machine?*).
+The ripple effect is that software creation is commoditized with tools like Windsurf, Cursor, and v0. It's tempting, even necessary sometimes, to lean into the speed – I myself have certainly felt the pull of 'vibe coding' with the latest models, trusting the 'vibes' because the AI is just that good. As a self-taught engineer, it reminds me a bit of learning with pseudocode – a useful starting point, perhaps, but not the whole journey. However, at what point does comprehension need to surpass approximation or speed?
+
+As an athlete and coach, I spent years focused on reaching "flow state." Peak performance wasn't just about talent; it came from deeply internalizing technique, fundamentals, and core concepts through repetition, allowing instinct built on understanding to take over when conscious thought couldn't keep up. *(Pretty powerful!)*
+
+Now, what will it look like for agents to be in flow state? We need to give them just that – the embedded understanding, the accessible memory of core concepts, context, and decisions. 
+
+To effectively orchestrate AI-generated code for complex, reliable systems (beyond a cool landing page), relying purely on 'vibes' isn't enough. You need deep fluency in both the problem domain and the generated syntax *(what are you trying to create and how can you tell that specifically to the machine?*).
 
 If you don’t believe me, clone the [Kubernetes](https://github.com/kubernetes/kubernetes) codebase and drop it into Gemini 2.5 Pro or [DeepWiki](https://deepwiki.com/) and ask a question. Or tell [v0](https://v0.dev/) to clone your favorite landing page. Absolutely incredible.
 
