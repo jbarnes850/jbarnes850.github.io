@@ -9,11 +9,11 @@ My first attempt at building a distributed learning system wasn't for a tech com
 
 These organizations are on the front lines of a critical social issue, and they collect a treasure trove of data: community needs, seasonal demand, supply chain bottlenecks. But privacy rules and siloed systems meant they couldn't share it. Each food bank was an island, operating with limited visibility while the data that could help them collectively was locked away. It was a classic coordination problem.
 
-So, we tried to solve it with federated learning. The idea was simple: allow their systems to learn from each other's data without ever exposing the raw, private information. It was a beautiful concept. And it mostly worked. But when it failed, it was baffling. An agent in one location would stumble on a data format it had never seen, and the entire learning process would grind to a halt. There was no mechanism for it to learn from the error and share that solution with the rest of the network.
+So, we tried to solve it with federated learning. The idea was simple: allow their systems to learn from each other's data without ever exposing the raw, private information. It was a big idea to take to non-profits and local governments. And it [mostly worked](https://github.com/jbarnes850/Federated-Learning-Workshop/blob/main/Presentation/Decentralized%20Federated%20Learning%20Architecture.pdf). But when it failed, it failed miserably. An agent in one location would stumble on a data format it had never seen (ie. multimodal data of donations or food inventory), and the entire learning process would grind to a halt. There was no mechanism for it to learn from the error and share that solution with the rest of the network.
 
 ## Overengineering An Age Old Problem
 
-The experience stuck with me. It felt less like an engineering problem and more like a learning problem. 
+The experience stuck with me. It felt less like an engineering problem and more like a learning and coordination problem. 
 
 By trade, I'm an educator. I spent years studying the concept of "productive struggle." Simply put, learning isn't about getting the right answer. It's about grappling with a problem that's just beyond your current ability. It's that sweet spot where you're challenged but not overwhelmed. The struggle itself is what creates deep, lasting knowledge. We learn when we have to try, fail, and adapt.
 
@@ -25,7 +25,7 @@ This is not going to work. In the next 18-24 months, as every company deploys th
 
 ## Why Your Agents Can't Learn (Yet)
 
-I kept thinking, "What if agents had a stand-up meeting together? What if they could reflect on their work, share what went wrong, and learn from each other's failures?"
+An idea I haven't been able to get out of my head is, "What if agents had a stand-up meeting together? What if they could reflect on their work, share what went wrong, and learn from each other's failures?" 
 
 Agent failures aren't random; they're [patterns](https://arxiv.org/pdf/2505.08638). An API timeout, a malformed response, a hallucinated parameter, these are signals. They are learning opportunities.
 
