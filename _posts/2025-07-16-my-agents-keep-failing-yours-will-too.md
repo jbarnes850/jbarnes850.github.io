@@ -33,7 +33,7 @@ The productive struggle of one agent must become the learning of the entire netw
 
 But for that to happen, we need to build the infrastructure for it. Imagine registering your agent with a network where it immediately begins to learn from the collective experience of every other agent. A payment agent in one corner of the world struggles with and learns how to handle a rare Stripe API error. That knowledge, not the raw data, but the learned abstraction is instantly shared. The result is that every other payment agent in the network now handles that error flawlessly.
 
-This is a distributed learning network. It's how we move from brittle, hand-coded reliability to resilient, autonomous systems. Every failure, anywhere in the network, makes every agent everywhere stronger. It's compound interest for AI reliability.
+This is a distributed learning network. It's how we move from brittle, hand-coded reliability to resilient, autonomous systems. Every failure, anywhere in the network, makes every agent everywhere stronger. It's compound interest for AI reliability. The feeling of this is having a true thought partner beside you who deeply understands the nuance of the organization (beyond goals and rewards). 
 
 ## How to Teach an Agent to Learn
 
@@ -45,12 +45,12 @@ Two ideas from the research community point the way:
 
 Here's what this means: We need to build a new layer in the stack, a "cognitive" layer that manages this continuous learning process. It would handle four key things:
 
-1. **Persistent Model State:** Giving agents a memory that evolves. Not just a chat history, but a deep, compounding understanding of their environment and goals.
-2. **Goal Composition:** A way to resolve conflicts when a sales agent's goals clash with a finance agent's.
+1. **Persistent Model State:** (ie. Team/organization wide memory) Giving agents a memory that evolves. Not just a chat history, but a deep, compounding understanding of their environment and goals.
+2. **Goal Composition:** A way to resolve conflicts when a sales agent's goals clash with a finance agent's (ie. A protocol for users to teach the system, complete with reviews and ownership, ensuring that human expertise is captured and scaled.)
 3. **Verification Orchestration:** A hierarchy of specialized "verifier" agents that act as the immune system for the network, ensuring integrity.
 4. **Distributed Learning Protocol:** The core of the system. A protocol for agents to share learned strategies and failure-recovery patterns without sharing sensitive data.
 
-A high level implementation may look something like:
+To make this tangible, here’s what that cognitive layer might look like in practice, handling a failure and learning from it
 
 ```python
 # Distributed failure handling with autonomous learning capabilities
