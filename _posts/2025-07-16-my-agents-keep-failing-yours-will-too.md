@@ -2,7 +2,7 @@
 layout: post
 title: "My Agents Keep Failing. Yours Will Too."
 date: 2025-07-16
-categories: [AI, Agents, Distributed Systems]
+categories: [Distributed Systems]
 ---
 
 My first attempt at building a distributed learning system wasn't for a tech company. It was for a network of food banks.
