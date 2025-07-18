@@ -17,7 +17,7 @@ The experience stuck with me. It felt less like an engineering problem and more 
 
 By trade, I'm an educator. I spent years studying the concept of "productive struggle." Simply put, learning isn't about getting the right answer. It's about grappling with a problem that's just beyond your current ability. It's that sweet spot where you're challenged but not overwhelmed. The struggle itself is what creates deep, lasting knowledge. We learn when we have to try, fail, and adapt.
 
-After years of studying this in humans, I looked at our AI agents and had a startling thought: We are building agents that don't know how to learn.
+After years of studying this in humans, I've seen the same pattern with AI. We are building agents that don't know how to learn.
 
 We expect them to perform flawlessly, and when they don't, we treat it as a bug to be patched by a human. An agent fails, an engineer gets paged, and the endless, reactive loop spins up. It's a manual, brittle process. We're not teaching our agents to learn; we're just fixing their mistakes.
 
