@@ -17,15 +17,15 @@ This brings us to the second half of the AI story: the AI-AI loop, where systems
 
 The last mile of sequential tool-calling will be solved; the next generation of frontier models is already demonstrating [near-perfect execution](https://artificialanalysis.ai/articles/gpt-5-benchmarks-and-analysis) on complex tool use. But our industry is not in the business of selling tool-calling; we are in the business of selling intelligence. 
 
-The real challenge is not execution, but learning.This is the [Judgment Gap](https://www.arc.computer/blog/Navigating-Dual-Control-Environments): the disconnect between an agent's ability to plan a solution and its ability to apply collaborative judgment in implementing it. 
+The real challenge is not execution, but learning. This is the [Judgment Gap](https://www.arc.computer/blog/Navigating-Dual-Control-Environments): the disconnect between an agent's ability to plan a solution and its ability to apply collaborative judgment in implementing it. 
 
 This gap persists even as models improve, manifesting as stark performance drops in collaborative benchmarks like [τ²-bench](https://arxiv.org/pdf/2506.07982) and [MCP-Bench](https://papers-pdfs.assets.alphaxiv.org/2508.20453v1.pdf) where success requires not just tool use, but genuine multi-step, cross-domain coordination.
 
 The industry’s answer has fractured into two distinct camps, both products of the same over-engineering mindset. 
 
-1. **Domain-specific reinforcement learning** \- where compute is dedicated to complex, multi-stage RL to sharpen an agent's skills for a narrow set of tasks. While powerful, this creates specialized models that struggle to generalize and require retraining as the business environment changes.
+1. **Domain-specific reinforcement learning** - where compute is dedicated to complex, multi-stage RL to sharpen an agent's skills for a narrow set of tasks. While powerful, this creates specialized models that struggle to generalize and require retraining as the business environment changes.
 
-2. **Orchestration (i.e. the multi-agent system)** \- which attempts to brute-force reliability by adding more agents, more communication, and more complexity. While hierarchical, orchestrator-led systems have shown significant value in code (claude code, Codex, etc), the world operates outside the IDE. The default sub-agent architecture often turns into confused assistants or introduces numerous points of failure from task decomposition, wasting compute on coordination rather than problem-solving. 
+2. **Orchestration (i.e. the multi-agent system)** - which attempts to brute-force reliability by adding more agents, more communication, and more complexity. While hierarchical, orchestrator-led systems have shown significant value in code (claude code, Codex, etc), the world operates outside the IDE. The default sub-agent architecture often turns into confused assistants or introduces numerous points of failure from task decomposition, wasting compute on coordination rather than problem-solving. 
 
 We believe this is the wrong frame. Agent reliability is a learning problem that demands a better, [simpler architecture](https://www.interconnects.ai/p/contra-dwarkesh-on-continual-learning). 
 
