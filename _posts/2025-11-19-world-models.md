@@ -7,11 +7,11 @@ categories: [AI, Engineering]
 
 > This is a working note on how I think about world models: what they are, how to train them, and how they sit alongside agents. It’s written for a technical audience, but many of the ideas borrow directly from human learning.
 
-Humans carry around an internal sense of how the world responds to our actions. We rely on it constantly when we enter a new environment, make a decision, or reflect on the past. We learn to map in minds and often predict "in this state, if I do X, Y tends to happen."
+Humans carry around an internal sense of how the world responds to our actions. We rely on it constantly when we enter a new environment, make a decision, or reflect on the past. We learn to map in our minds and often predict "in this state, if I do X, Y tends to happen."
 
 These are core primitives of human learning. We think and act in stateful environments (metacognition), get rich feedback (process feedback), and quietly update an internal **world model of consequences**, a structural map of "if I intervene here, this is what changes." This is the same basic pattern as [CausalARC](https://arxiv.org/abs/2509.00000): reasoning tasks are sampled from a causal model, and the learner must exploit observations, interventions, and counterfactuals to solve them.
 
-I’ve spent the last year building these primitives into software. My work on [Atlas](https://github.com/Arc-Computer/ATLAS) focuses on continual learning for AI systems. Effectively, enabling LLMs to learn from its own actions in real time and adapt and evolve it's behavior.
+I've spent the last year building these primitives into software. My work on [Atlas](https://github.com/Arc-Computer/ATLAS) focuses on continual learning for AI systems. Effectively, enabling LLMs to learn from their own actions in real time and adapt and evolve their behavior.
 
 This [research](https://arxiv.org/abs/2511.01093) convinced me of two things:
 
@@ -20,7 +20,7 @@ This [research](https://arxiv.org/abs/2511.01093) convinced me of two things:
 
 Most agentic systems today (Atlas included) are *policy learners*. They react to feedback and adjust *what to do* next time. However, we as humans plan proactively, we reason about the future, we think about the consequences of our actions. For this to happen within an AI system, it needs a reusable, explicit understanding of *how the environment behaves*. It needs to know, in a structured way, that “if I click this button in this admin console while logged in as finance, a wire will actually be sent.”
 
-This is the role of a **world model of consequence**. In this post I’ll talk about what I mean by a world model and how I’m using AI browsers as the first concrete proxy environment to test these ideas.
+This is the role of a **world model of consequence**. This post explores what I mean by a world model and how I'm using AI browsers as the first concrete proxy environment to test these ideas.
 
 ---
 
@@ -55,7 +55,7 @@ That leads to three failure modes I've observed in production:
 
 A world model tackles this directly. It enables an AI system to **simulate the outcome of actions** before ever committing to it in the real environment.
 
-![World Model Architecture](/assets/images/World%20Model%20Architecture.jpg)
+![Diagram comparing standard agentic reasoning with world model-enhanced reasoning, showing how a world model enables imagining actions and environment feedback before execution](/assets/images/World%20Model%20Architecture.jpg)
 *Image Credit: Adapted from [Meta's Code World Model](https://ai.meta.com/research/publications/code-world-models/).*
 
 World models have their roots in robotics and physical AI. In domains like self-driving, we build "digital twins," simulations where an agent can crash a thousand cars to learn how to drive one safely. Work like NVIDIA's [Cosmos](https://arxiv.org/abs/2501.03575) formalizes this: you train a foundation model of physics so your agent can plan in a learned reality before touching the real world.
