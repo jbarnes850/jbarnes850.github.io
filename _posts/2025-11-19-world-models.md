@@ -7,9 +7,9 @@ categories: [AI, Engineering]
 
 > This is a working note on how I think about world models: what they are, how to train them, and how they sit alongside agents. It’s written for a technical audience, but many of the ideas borrow directly from human learning.
 
-Humans carry around an internal sense of how the world responds to our actions. We rely on it constantly - when we enter a new environment, make a decision, or reflect on the past. We learn to map in minds and often predict “in this state, if I do X, Y tends to happen.”
+Humans carry around an internal sense of how the world responds to our actions. We rely on it constantly when we enter a new environment, make a decision, or reflect on the past. We learn to map in minds and often predict "in this state, if I do X, Y tends to happen."
 
-These are core primitives of human learning. We think and act in stateful environments (metacognition), get rich feedback (process feedback), and quietly update an internal **world model of consequences** - a structural map of "if I intervene here, this is what changes." This is the same basic pattern as [CausalARC](https://arxiv.org/abs/2509.00000): reasoning tasks are sampled from a causal model, and the learner must exploit observations, interventions, and counterfactuals to solve them.
+These are core primitives of human learning. We think and act in stateful environments (metacognition), get rich feedback (process feedback), and quietly update an internal **world model of consequences**, a structural map of "if I intervene here, this is what changes." This is the same basic pattern as [CausalARC](https://arxiv.org/abs/2509.00000): reasoning tasks are sampled from a causal model, and the learner must exploit observations, interventions, and counterfactuals to solve them.
 
 I’ve spent the last year building these primitives into software. My work on [Atlas](https://github.com/Arc-Computer/ATLAS) focuses on continual learning for AI systems. Effectively, enabling LLMs to learn from its own actions in real time and adapt and evolve it's behavior.
 
@@ -58,7 +58,7 @@ A world model tackles this directly. It enables an AI system to **simulate the o
 ![World Model Architecture](/assets/images/World%20Model%20Architecture.jpg)
 *Image Credit: Adapted from [Meta's Code World Model](https://ai.meta.com/research/publications/code-world-models/).*
 
-World models have their roots in robotics and physical AI. In domains like self-driving, we build "digital twins"—simulations where an agent can crash a thousand cars to learn how to drive one safely. Work like NVIDIA's [Cosmos](https://arxiv.org/abs/2501.03575) formalizes this: you train a foundation model of physics so your agent can plan in a learned reality before touching the real world.
+World models have their roots in robotics and physical AI. In domains like self-driving, we build "digital twins," simulations where an agent can crash a thousand cars to learn how to drive one safely. Work like NVIDIA's [Cosmos](https://arxiv.org/abs/2501.03575) formalizes this: you train a foundation model of physics so your agent can plan in a learned reality before touching the real world.
 
 I view the browser as the digital equivalent of that physical reality. It is a **gateway to a universe**.
 
@@ -87,7 +87,7 @@ That’s exactly the question we want agents to be able to ask and answer before
 
 An agent-first world-model interface for this domain looks like:
 
-```text
+```
 predict_outcome(state, action) -> {
   risk_label,          // "safe" | "unsafe" | "uncertain"
   risk_score,          // float in [0, 1]
@@ -121,7 +121,7 @@ The runtime loop looks like:
 The training pipeline here is evolving as the research landscape shifts. What I've found is a pattern that’s now showing up in multiple world-model papers: **early experience**, **Socratic supervision**, **mid-training**, then **multi-task Supervised Fine-Tuning (SFT)**.
 
 ### 1. Early Experience: Coverage & Dynamics
-The first goal is simply to understand the environment's physics. We need **coverage**, broad exposure to states and transitions—without the bottleneck of human labeling.
+The first goal is simply to understand the environment's physics. We need **coverage**, broad exposure to states and transitions, without the bottleneck of human labeling.
 
 I roll out a baseline browser agent (Agent backed by a strong base model) in the browser environments and record:
 
@@ -147,11 +147,11 @@ For that, we add a **Socratic supervision layer**, inspired by [*Socratic-Zero*]
 - **Counterfactual**: What would a safer alternative look like?
 - **Rationale**: Why is this the case?
 
-This transforms a raw `(state, action, next_state)` tuple into a supervised lesson. The teacher isn't just predicting the next token; it's explaining the *causal structure* of the risk. These traces give us the high-quality targets—risk scores, rationales, counterfactuals—that we need to train the world model interface defined above.
+This transforms a raw `(state, action, next_state)` tuple into a supervised lesson. The teacher isn't just predicting the next token; it's explaining the *causal structure* of the risk. These traces give us the high-quality targets, risk scores, rationales, counterfactuals, that we need to train the world model interface defined above.
 
 ### 3. Mid-Train + Multi-Task SFT
 
-Now - we get to training. From a dataset perspective, we merge early-experience episodes and Socratic traces into two datasets:
+Now we get to training. From a dataset perspective, we merge early-experience episodes and Socratic traces into two datasets:
 
 - A **mid-train dataset** of transition-focused examples:
   - `state_summary`, `action_repr`, `next_state_summary`, optional teacher rationale, and a weight from the Socratic curriculum.
@@ -232,7 +232,7 @@ World models are not a magic bullet, but they represent a fundamental shift in h
   Today we build specific models for specific risks (security, fraud). But a truly robust world model is effectively a "common sense engine" for digital environments. Once an agent understands the *consequences* of actions generally, does it start to exhibit broader reasoning capabilities? How does this influence the way we build and apply AI systems? 
 
 - **How does this change Human-Computer Interaction?**
-  If an agent can reliably simulate consequences, the nature of delegation changes. We move from "human-in-the-loop" (checking every step) to "human-on-the-loop" (reviewing the *predicted* consequences before approving a plan). Trust shifts from trusting the *process* to trusting the *model's understanding of risk* - which, when you sit and think about this, is quite scary but similar to how engineers interact with coding agents today. 
+  If an agent can reliably simulate consequences, the nature of delegation changes. We move from "human-in-the-loop" (checking every step) to "human-on-the-loop" (reviewing the *predicted* consequences before approving a plan). Trust shifts from trusting the *process* to trusting the *model's understanding of risk*, which, when you sit and think about this, is quite scary but similar to how engineers interact with coding agents today. 
 
 - **How do we evaluate causal understanding?**
   This is the hardest unsolved problem. Standard metrics measure outcomes, not understanding. We need new benchmarks that test whether an agent actually *knows* why it succeeded, or if it just memorized a winning path. Games and open-ended digital environments are a natural place to revisit but imagine this will be a long journey.
