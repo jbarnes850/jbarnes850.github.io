@@ -121,9 +121,9 @@ The runtime loop looks like:
 The training pipeline here is evolving as the research landscape shifts. What I've found is a pattern that’s now showing up in multiple world-model papers: **early experience**, **Socratic supervision**, **mid-training**, then **multi-task Supervised Fine-Tuning (SFT)**.
 
 ### 1. Early Experience: Coverage & Dynamics
-The first goal is simply to understand the environment's physics. We need **coverage**—broad exposure to states and transitions—without the bottleneck of human labeling.
+The first goal is simply to understand the environment's physics. We need **coverage**, broad exposure to states and transitions—without the bottleneck of human labeling.
 
-I roll out a baseline browser agent (LLMPolicyAgent backed by a strong base model) in the browser environments and record:
+I roll out a baseline browser agent (Agent backed by a strong base model) in the browser environments and record:
 
 - The state summary before each action.
 - The action dict.
@@ -138,7 +138,7 @@ In practice, this gives us thousands of episodes per site, mixing benign workflo
 This generates a massive dataset of raw transitions that grounds the model in how the browser actually behaves.
 
 ### 2. Socratic Attacks: Causality & Supervision
-Early experience tells you *what tends to happen*, but not *what matters*. It lacks the causal judgment of whether an action was dangerous or optimal.
+However, we still need to understand the causal judgment of whether an action was dangerous or optimal.
 
 For that, we add a **Socratic supervision layer**, inspired by [*Socratic-Zero*](https://arxiv.org/abs/2505.00000). We take the raw traces from our coverage runs (or generate new attack-specific ones) and have a stronger "Teacher" model annotate them with rich causal reasoning:
 
@@ -151,7 +151,7 @@ This transforms a raw `(state, action, next_state)` tuple into a supervised less
 
 ### 3. Mid-Train + Multi-Task SFT
 
-We merge early-experience episodes and Socratic traces into two datasets:
+Now - we get to training. From a dataset perspective, we merge early-experience episodes and Socratic traces into two datasets:
 
 - A **mid-train dataset** of transition-focused examples:
   - `state_summary`, `action_repr`, `next_state_summary`, optional teacher rationale, and a weight from the Socratic curriculum.
@@ -171,23 +171,17 @@ We use the Early Experience data for a **mid-training stage** that moves the bas
 - One proposes counterfactual actions.
 - Optionally, one predicts structured state deltas.
 
-This is where the “world model of consequences” becomes more than a classifier. It learns not just *whether* an action is dangerous, but *how* and *what to do instead*.
+This is where the model learns not just whether an action is dangerous, but how and what to do instead.
 
 ### 4. On-Policy Distillation
 
-Multi-task SFT gives you a solid supervised world model, but it’s still trained “offline,” even if the data came from agents. The natural next layer is to let the model keep improving on the **states it actually visits** when coupled to a policy - what the on-policy distillation literature calls Generalized Knowledge Distillation ([GKD](https://arxiv.org/abs/2306.13649)).
+Multi-task SFT gives you a solid supervised world model. The natural next layer is to let the model keep improving on the **states it visits** when coupled to a policy.
 
 Conceptually, an on-policy distillation stage for a browser world model looks like:
 
 - Treat the current world model (or a separate student) as the **student**.
 - Let the **Socratic Teacher** (or a stronger ensemble) score and comment on the student’s predictions on real rollouts.
-- Optimize the student to match the teacher’s distributions and rationales on those *student-visited* states, not just on a static dataset.
-
-In practice this looks very similar to the Atlas GKD setup:
-
-- The student is queried in the loop, generating trajectories and `predict_outcome` calls as it would in production.
-- The teacher provides dense, token-level feedback - better labels, sharper rationales, corrections to missed cues - which are turned into an on-policy distillation objective.
-- Training alternates between gathering fresh rollouts and updating the student, so the world model stays matched to the evolving distribution of agent behavior and attacks.
+- Optimize the student to match the teacher’s distributions and rationales on those student-visited states.
 
 Done carefully, this bridges the gap between pure supervised world modeling and full RL: you get many of the benefits of experience-driven improvement (better coverage of edge cases, robustness to your own failure modes) with a much more stable and sample-efficient optimization loop. RL can still sit on top for specific reward-rich slices, but on-policy distillation is likely to be the workhorse.
 
@@ -199,72 +193,46 @@ The biggest learning I’ve had so far is that this misses what makes world mode
 
 Empirically, world models seem to benefit **more from high-volume, slightly messy exploration data than from tiny, pristine, task-specific datasets**. The model first learns the environment’s dynamics from broad exploration, then transfers that understanding to whatever tasks you care about.
 
-In the browser setting, **Early Experience** provides that high-volume exploration layer: reward-free `(state, action, next_state)` traces where an agent just acts and we watch how the world responds. **Socratic supervision** is the higher-quality layer on top: a teacher that sparsely annotates those trajectories with rich causal feedback - risk labels, consequences, counterfactual actions, curriculum weights.
-
-The world model learns the “physics” of the environment from Early Experience, then learns *what we care about* (risk, consequences, safer alternatives) from Socratic teaching. On-policy distillation is the final refinement step: it sharpens the model on the particular corners of state space that real agents actually visit.
-
 Under that view, “good” looks less like “hit X% on benchmark Y” and more like:
 
 - Has the model actually internalized the **short- and long-term implications** of actions in this environment?
 - Can it **reuse** that environmental understanding to solve **novel tasks** it wasn’t explicitly trained on?
 - Does its notion of consequence **transfer** when you change goals, agents, or surface tasks, as long as the underlying environment is the same?
 
-That’s a different evaluation mindset. Instead of only asking “did the agent finish this checklist?”, you start asking “how well does the world model’s knowledge of this environment generalize to new goals and perturbations?”
+That’s a different evaluation mindset. You start asking “how well does the world model’s knowledge of this environment generalize to new goals and perturbations?”
 
-This is exactly the kind of question CausalARC pushes on in a more abstract setting: can a model leverage a causal world model learned from a handful of observations and interventions to handle new tasks drawn from the same underlying process? For browser agents (and other real systems), we need analogous **dynamic, fluid benchmarks** that can:
+This is exactly the kind of question NVIDIA’s [Cosmos](https://arxiv.org/abs/2501.03575) evaluates physical world models on **3D consistency** and **object kinematics**, ensuring the model respects the laws of physics rather than just generating plausible pixels.
+
+For browser agents (and other real systems), we need analogous **dynamic, fluid benchmarks** that can:
 
 - Generate new tasks and attack patterns from a shared environment schema.
 - Vary goals and constraints while keeping the underlying dynamics fixed.
 - Measure not just end-task success, but **how effectively the world model’s learned environment knowledge applies off-distribution**.
 
-My current pipeline - Early Experience for breadth, Socratic teaching for depth, on-policy distillation for live sharpening - is one concrete attempt to line up training and evaluation with that philosophy. You design the richest possible learning environment you can, give the model time to explore and see the consequences of its decisions, and then test not just whether it can replay known solutions, but whether it behaves like a genuinely good *learner* inside that world.
+What I've shared so far is one concrete attempt to line up training and evaluation with that philosophy. You design the richest possible learning environment you can, give the model time to explore and see the consequences of its decisions, and then test whether it behaves like a genuinely good *learner* inside that world.
 
 ---
 
-## Browsers as a Proxy for the Longer-Term Story
+## Browsers as a Proxy for where we're heading
 
-All of this browser work is a wedge, not the end state.
+If you view browsers as a proxy for agentic environments, then a few assumptions about the future are: 
 
-The broader thesis that ties Atlas, the browser experiments, and the world-model pipeline together is:
+1. **Agents will learn from their own trajectories.** early evidence of this now, only more to come.
+2. **World models are how you turn that experience into reusable structure.** agents build a persistent model of how an environment behaves under actions.
+3. **Planning-capable agents will eventually internalize these world models.** agents embed these capabilities internally for planning and decision-making, the way autonomous systems (self driving cars, robots, etc) already do in continuous control.
 
-1. **Agents should learn from their own trajectories.** Reward-free early experience, Socratic teachers, and on-policy distillation give you scalable supervision grounded in what agents actually do.
-2. **World models are how you turn that experience into reusable structure.** Instead of heuristics and prompts scattered across systems, you get a persistent model of how an environment behaves under actions.
-3. **Planning-capable agents will eventually internalize these world models.** Today we expose `predict_outcome` as a separate service. Over time, I expect agents to use these models internally for planning and RL, the way Dreamer-style agents already do in continuous control.
-
-Browsers are just the first surface where this is both urgent and measurable.
-
-The same architecture applies cleanly to:
-
-- **Auth and access control** - predict whether a policy change or role assignment will open a dangerous pathway.
-- **SRE and operations** - predict the impact of a rollback, config change, or failover action on incidents and SLAs.
-- **Tool ecosystems (MCP and friends)** - predict the consequences of tool calls and resource access in complex tool graphs (like the Model Context Protocol).
-
-In each case, the loop looks similar:
-
-1. Wrap the environment in a harness that emits structured `(state, action, outcome)` traces.
-2. Collect early experience and Socratic supervision.
-3. Mid-train and SFT a world model of consequences.
-4. Optionally, add on-policy distillation (and RL where rewards are clear) so the model keeps improving on the states agents actually visit.
-5. Expose `predict_outcome` to whatever policy agents you already have.
-
-Over time, those domain-specific world models become a shared substrate. Atlas-style continual learning, on-policy distillation, and RL can all sit on top of them, but the center of gravity is a **reusable model of how the world responds to actions**.
-
+Browsers are just one of the early surfaces where this is both urgent and measurable.
 ---
 
-## Limitations and Open Questions
+## Open Questions
 
-World models are not a magic bullet. They’re the piece we keep reinventing informally in prompts, heuristics, and ad-hoc guardrails, but making them explicit raises its own questions.
+World models are not a magic bullet, but they represent a fundamental shift in how we engineer intelligence. As we solve the core technical hurdles, the questions become less about "how" and more about "what now":
 
-A few I keep returning to:
+- **What are the implications of generalized world modeling?**
+  Today we build specific models for specific risks (security, fraud). But a truly robust world model is effectively a "common sense engine" for digital environments. Once an agent understands the *consequences* of actions generally, does it start to exhibit broader reasoning capabilities? How does this influence the way we build and apply AI systems? 
 
-- **How general can a consequence-first world model be?** It’s natural to focus on risk and state deltas in security-flavored environments, but the same machinery can clearly support broader reasoning objectives. The open question is how far you can push a single “reasoning world model” before you need to spin out domain-specific variants.
-- **Where should learning live in the stack?** Nested Learning suggests we can add levels - base model, world model, orchestration, meta-learning - but that doesn’t tell us which updates belong where. On-policy distillation and RL provide knobs; we still need good operational recipes for when to turn which knobs for stability vs. plasticity.
-- **How do we evaluate causal understanding, not just classification?** Benchmarks like CausalARC point toward richer tests of counterfactual reasoning. For browser agents, we’re only scratching the surface with standard metrics like Attack Success Rate (ASR) and Tokens Per Strict Success (TPSS); there’s room for more principled causal evaluation.
+- **How does this change Human-Computer Interaction?**
+  If an agent can reliably simulate consequences, the nature of delegation changes. We move from "human-in-the-loop" (checking every step) to "human-on-the-loop" (reviewing the *predicted* consequences before approving a plan). Trust shifts from trusting the *process* to trusting the *model's understanding of risk* - which, when you sit and think about this, is quite scary but similar to how engineers interact with coding agents today. 
 
-What feels non-negotiable to me is the underlying direction:
-
-- Agents need to **learn from their own trajectories**, not just from static pretraining corpora.
-- They need a **world-model-like representation** of how their environments respond to actions if we want planning, transfer, and safety to scale.
-- And they need architectures - Atlas-style learning layers, nested optimizers, on-policy distillation loops - that let that world model keep improving without constant human intervention.
-
-The browser is just one narrow but revealing arena to work these ideas out. If we can build a world model that keeps AI browsers from quietly exfiltrating payroll data or disabling Multi-Factor Authentication (MFA) while still getting real work done, that’s a strong signal that the same approach can carry over to the rest of the stack.
+- **How do we evaluate causal understanding?**
+  This is the hardest unsolved problem. Standard metrics measure outcomes, not understanding. We need new benchmarks that test whether an agent actually *knows* why it succeeded, or if it just memorized a winning path. Games and open-ended digital environments are a natural place to revisit but imagine this will be a long journey.
