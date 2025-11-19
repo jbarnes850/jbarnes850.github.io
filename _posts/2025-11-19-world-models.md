@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Building a World Model of Consequence"
-date: 2025-11-29
+date: 2025-11-19
 categories: [AI, Engineering]
 ---
 
@@ -56,7 +56,7 @@ That leads to three failure modes I've observed in production:
 A world model tackles this directly. It enables an AI system to **simulate the outcome of actions** before ever committing to it in the real environment.
 
 ![World Model Architecture](/assets/images/World%20Model%20Architecture.jpg)
-*Image Credit: Adapted from [Meta's Code World Model](https://ai.meta.com/research/publications/code-World Models/).*
+*Image Credit: Adapted from [Meta's Code World Model](https://ai.meta.com/research/publications/code-world-models/).*
 
 World models have their roots in robotics and physical AI. In domains like self-driving, we build "digital twins"—simulations where an agent can crash a thousand cars to learn how to drive one safely. Work like NVIDIA's [Cosmos](https://arxiv.org/abs/2501.03575) formalizes this: you train a foundation model of physics so your agent can plan in a learned reality before touching the real world.
 
