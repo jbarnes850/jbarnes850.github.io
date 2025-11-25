@@ -9,41 +9,44 @@ categories: [AI, Engineering]
 
 ---
 
-## From Tools to Actors
+## The Missing Layer
 
-The productivity evidence is in. Anthropic's recent analysis of 100,000 real conversations shows AI reducing task completion time by 80%. Tasks that would cost $55 in human labor, done in a fraction of the time. The gains are real and compounding.
+Last month I watched an agent approve a payment batch that should have been escalated. The agent had all the context: it could see the counterparty's recent activity, the current limit utilization, the time of day. It approved anyway. The batch was fine, as it turned out. But I couldn't shake the question: *what did the agent think would happen?*
 
-What I keep thinking about is where this leads.
+The answer, I realized, was nothing. It didn't think anything would happen. It matched patterns, called the right tool, and moved on. There was no model of consequence running in its head. No "if I do this, then that." Just input, output, next.
 
-When I work with coding agents now, I focus on one thing: how quickly can I get them real-time feedback loops? Spin up a sandbox, compile, run tests, see what breaks. The agent isn't just generating code. It's reasoning about consequences by watching what happens when the code executes.
+When I work with coding agents, I don't have this problem. I spin up a sandbox, the agent writes code, the code runs, something breaks or doesn't. The agent learns from execution. It's reasoning about consequences by watching what happens. That's why coding agents feel different. They have a feedback loop that grounds them in reality.
 
-That's a different kind of capability than autocomplete. And it's already here for code. The question is what happens when we extend it to everything else:
+But payments don't have a sandbox. Neither do security operations, infrastructure changes, or customer account modifications. The agent can't "try" approving a wire transfer to see what happens. By the time you know the consequence, the money is gone.
 
-- Agents that run support tickets end-to-end, including issuing refunds and modifying accounts.
-- Agents that triage security alerts, open investigations, and draft incident reports.
-- Agents that apply runbooks, adjust infrastructure, and roll back bad deploys.
-- Agents that process payment approvals, verify counterparty risk, and move money.
+This is the gap I keep coming back to. We're building agents that can run support tickets end-to-end, triage security alerts, apply runbooks, process payment approvals. The capability is largely here. What's missing is how organizations trust them to act without a human reviewing every step.
 
-The capability is largely here. What's missing is *how organizations trust them*.
+## Three Levels of Reasoning
 
-When a human employee takes a high-impact action, there's an implicit model of consequence running in their head: "If I approve this batch while we're near our daily limit, and the counterparty defaults tomorrow, here's what happens." They weigh that against alternatives. They escalate when uncertain.
+When I managed teams, the thing that separated good individual contributors from people ready for leadership wasn't technical skill. It was situational awareness. The ability to think through consequences before acting, to read the moment and adjust. You can't checklist that.
 
-Agents don't have this yet. They react to prompts, call tools, and hope the guardrails catch mistakes. But guardrails aren't the answer. They're a stopgap. This is the gap that consequence infrastructure fills.
+I've started thinking about this in terms of three levels. Most AI systems today operate at the first level: they observe patterns and predict likely completions. An agent approves a payment because it matches what approved payments look like. It's reactive. It doesn't model what approving this payment will *cause*.
 
-Most conversations about AI safety start with what to block. Input filters, output classifiers, judge models. All useful, all oriented around the same question: "How do we stop bad things from happening?" I've started asking a different question: what can we learn from forward simulation?
+The second level is interventional. The agent asks: "If I approve this, what happens next?" It simulates the downstream state. Counterparty exposure rises to X. Daily limit utilization hits Y%. Rollback cost is Z. This is prediction with teeth.
 
-When an agent can predict consequences before acting, you don't just get a guardrail. You get a planning tool. The agent doesn't just avoid the bad path. It finds a better one.
+The third level is counterfactual. The agent asks: "What would have happened if I'd done something else?" If I had required dual approval, exposure would have been capped at half. If I had split the batch, we'd stay under the daily limit. This is how you find better paths, not just avoid bad ones.
 
-The framing shift matters. Guardrails are about blocking. Consequence modeling is about enabling. It makes the best people even better at their jobs and opens up work that wasn't possible before.
+The jump from level one to levels two and three is the jump from pattern matching to causal reasoning. It's also the jump from opaque AI (the agent knows something we don't) to shared understanding (we both see the same predicted consequences). That's what makes delegation possible.
 
-A judge can tell you "this action looks risky." It cannot tell you:
+![Diagram showing the progression from L1 observational reasoning (agent alone, opaque to humans) through L2 interventional reasoning (shared view emerges) to L3 counterfactual reasoning (full shared understanding between human and agent)](/assets/images/counterfactual.jpeg)
+*The shift from pattern matching to causal simulation is also the shift from opaque reasoning to shared understanding. At L2 and L3, humans and agents see the same predicted consequences.*
 
-- What the expected exposure is if this action succeeds.
-- What downstream state changes will occur.
-- What rollback would cost if you need to undo it.
-- What a safer alternative would be that still achieves the goal.
+This is the same pattern showing up across recent research. In code, the shift from modeling what code looks like to modeling what code does when executed. In reinforcement learning, the shift from reward-based feedback to learning from the consequences of your own actions, even in the absence of external reward. In world modeling generally, the shift from recognizing familiar environments to actively learning environment dynamics from context. The common thread: turn raw experience into a reusable, cross-domain, environment-conditioned model of consequence.
 
-For low-stakes work, basic filters are fine. For high-stakes work, you need something that reasons about consequences in the language of the environment: dollars, policies, limits, dependencies, rollback cost.
+## From Guardrails to Consequence Models
+
+Most conversations about AI safety start with what to block. Input filters, output classifiers, judge models. All useful, all oriented around the same question: "How do we stop bad things from happening?"
+
+I've started asking a different question: what can we learn from forward simulation?
+
+A judge model can tell you "this action looks risky." But it can't tell you what the expected exposure is if the action succeeds, what downstream state changes will occur, what rollback would cost if you need to undo it, or what a safer alternative would be that still achieves the goal. It classifies. It doesn't reason.
+
+When an agent can predict consequences before acting, you don't just get a guardrail. You get a planning tool. The agent doesn't just avoid the bad path. It finds a better one. That's the difference between blocking and enabling. It makes the best people even better at their jobs and opens up work that wasn't possible before.
 
 ## Forward Simulation
 
@@ -102,69 +105,17 @@ The world model plays the role of that embedded manager brain: not doing the wor
 
 The difference from traditional guardrails is critical. Guardrails say "stop" or "go." A world model says "here's what happens, here's the risk, here's an alternative, and here's why." That's the difference between a red light and a navigator.
 
-## From Observation to Intervention
-
-When I managed teams, the thing that separated good individual contributors from people ready for leadership wasn't technical skill. It was situational awareness: the ability to think through consequences before acting, to read the moment and adjust. That's not something you can checklist.
-
-There's a formal structure underneath this intuition. In causal inference, Pearl's Causal Hierarchy defines three levels of reasoning:
-
-- **Observational (L1)**: What do I see? *P(Y | X)*
-- **Interventional (L2)**: What happens if I act? *P(Y | do(X))*
-- **Counterfactual (L3)**: What would have happened if I'd acted differently? *P(Y_x | observed)*
-
-Most AI systems today operate at L1. They observe prompts, predict likely completions, and generate outputs. They're reactive pattern matchers that don't model what their outputs cause in the environment.
-
-Forward simulation is the jump to L2 and L3. When an agent asks "what will happen if I execute this action?", it's asking an interventional question. When it asks "what would have happened if I'd done something else?", it's asking a counterfactual question.
-
-Concretely:
-
-- An agent that approves a payment because it matches past patterns (observational).
-- An agent that simulates the downstream state: "If I approve this, counterparty exposure rises to X, daily limit utilization hits Y%, and rollback cost is Z" (interventional).
-- An agent that also computes: "If I had required dual approval, exposure would have been capped at X/2" (counterfactual).
-
-The interventional and counterfactual layers are what make agents trustworthy for high-stakes work.
-
-![Diagram showing the progression from L1 observational reasoning (agent alone, opaque to humans) through L2 interventional reasoning (shared view emerges) to L3 counterfactual reasoning (full shared understanding between human and agent)](/assets/images/counterfactual.jpeg)
-*The shift from pattern matching to causal simulation is also the shift from opaque reasoning to shared understanding. At L2 and L3, humans and agents see the same predicted consequences.*
-
-This is the same pattern showing up across recent research:
-
-- In code, the shift from modeling what code looks like to modeling what code does when executed.
-- In reinforcement learning, the shift from reward-based feedback to learning from the consequences of your own actions, even in the absence of external reward.
-- In world modeling generally, the shift from recognizing familiar environments to actively learning environment dynamics from context.
-
-The common thread: turn raw experience into a reusable, cross-domain, environment-conditioned model of consequence.
-
-If I had to name what we're building toward, I'd call it consequence infrastructure: systems that give agents (and the humans who deploy them) a reusable, environment-specific understanding of what actions will cause, how risky they are, and what alternatives exist. This is distinct from agent frameworks (how you build and orchestrate agents), observability (how you monitor what agents did), and safety classifiers (how you filter harmful content). Consequence infrastructure sits between the agent and the environment. It simulates what will happen before anything executes.
-
 ## What Good Looks Like
 
 In [Part 1](/2025/11/19/world-models), I focused on what makes a world model good at learning: broad coverage, transfer across tasks, internalization of environment dynamics. Those criteria still matter.
 
-For consequence infrastructure specifically, the question shifts to what makes a world model good at deployment:
+For consequence infrastructure specifically, the question shifts to what makes a world model good at deployment.
 
-1. **Grounded predictions**: Risk scores and consequences map to real metrics (dollars, violations, rollback cost), not abstract safety categories.
-
-2. **Actionable counterfactuals**: The system says "here's a safer alternative that still achieves the goal."
-
-3. **Cross-task transfer**: Understanding learned in one workflow (payment approvals) transfers to related workflows (refunds, limit changes) without full retraining.
-
-4. **Calibrated uncertainty**: When the model doesn't know, it says so, and escalates appropriately.
-
-5. **Auditability**: Every prediction is logged with enough context that a risk committee or regulator could reconstruct the decision.
+Start with grounded predictions. Risk scores and consequences should map to real metrics: dollars, violations, rollback cost. Not abstract safety categories. A model that says "high risk" is less useful than one that says "$47k exposure if this fails." The predictions need to be actionable, too. It's not enough to flag danger; the system should propose a safer alternative that still achieves the goal. Understanding should transfer across related workflows. A model that learns consequence patterns from payment approvals should apply that understanding to refunds and limit changes without full retraining. When the model doesn't know, it should say so and escalate appropriately. And every prediction needs to be logged with enough context that a risk committee or regulator could reconstruct the decision later.
 
 The evaluation mindset shifts from "did we hit X% on benchmark Y?" to "does the world model's understanding of consequence generalize to new goals and perturbations in this environment?"
 
-The economics follow from this. The question that matters: how do we do more work, at lower risk, for lower cost?
-
-Safety, performance, and efficiency aren't trade-offs in this model. They're the same thing. When you can accurately predict consequences:
-
-- You can let agents execute more actions autonomously (higher throughput).
-- You catch expensive mistakes before they happen (lower exposure).
-- You don't need humans to review every step (lower cost per unit of work).
-- You can deploy in higher-stakes contexts where the ROI justifies the investment.
-
-The metric that matters: cost per correct unit of work, adjusted for exposure and rollback.
+The economics follow. Safety, performance, and efficiency aren't trade-offs here. They're the same thing. When you can accurately predict consequences, you can let agents execute more actions autonomously. You catch expensive mistakes before they happen. You don't need humans to review every step. You can deploy in higher-stakes contexts where the ROI justifies the investment. The metric that matters: cost per correct unit of work, adjusted for exposure and rollback.
 
 Organizations that can answer this question will outcompete those that can't. They'll be able to trust agents with payment approvals, security operations, infrastructure changes, and customer account modifications while their competitors are still manually reviewing every action. This is why I think consequence infrastructure is foundational, not optional.
 
